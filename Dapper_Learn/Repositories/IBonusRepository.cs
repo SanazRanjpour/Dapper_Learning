@@ -4,6 +4,6 @@ namespace Dapper_Learn.Repositories
 {
     public interface IBonusRepository
     {
-        Task<List<Employee>> GetEmployeesWithCompany();
+        Task<List<Employee>> GetEmployeesWithCompany(int id);
     }
 }

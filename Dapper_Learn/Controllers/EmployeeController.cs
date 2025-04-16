@@ -14,9 +14,9 @@ namespace Dapper_Learn.Controllers
         [BindProperty]
         public Employee Employee { get; set; }
         
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int id = 0)
         {
-            return View(await _bonusRepository.GetEmployeesWithCompany());
+            return View(await _bonusRepository.GetEmployeesWithCompany(id));
         }
 
         [HttpGet]
