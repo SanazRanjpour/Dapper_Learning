@@ -8,14 +8,15 @@ namespace Dapper_Learn.Controllers
 {
     public class EmployeeController
         (IEmployeeRepository _employeeRepository,
-        ICompanyRepository _companyRepository) : Controller
+        ICompanyRepository _companyRepository,
+        IBonusRepository _bonusRepository) : Controller
     {
         [BindProperty]
         public Employee Employee { get; set; }
         
         public async Task<IActionResult> Index()
         {
-            return View(await _employeeRepository.GetAll());
+            return View(await _bonusRepository.GetEmployeesWithCompany());
         }
 
         [HttpGet]
