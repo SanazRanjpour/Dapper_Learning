@@ -1,9 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿
+
+using Dapper.Contrib.Extensions;
 
 namespace Dapper_Learn.Models
 {
     public class Company
     {
+        //NOTICE
+        // Key Should be Of Dapper.Contrib.Extensions Name Space Not System.ComponentModel.DataAnnotations
         [Key]
         public int CompanyId { get; set; }
         public string Name { get; set; }

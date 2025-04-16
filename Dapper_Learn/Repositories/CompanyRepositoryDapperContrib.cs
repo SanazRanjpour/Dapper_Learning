@@ -5,17 +5,10 @@ using System.Data;
 
 namespace Dapper_Learn.Repositories
 {
-    public class CompanyRepositoryDapperSP(IConfiguration configuration) : ICompanyRepository
+    public class CompanyRepositoryDapperContrib(IConfiguration configuration) : ICompanyRepository
     {
-        private readonly IDbConnection db = new SqlConnection
-                                           (configuration.GetConnectionString("DefaultConnection"));
+        private IDbConnection db = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
 
-        // or
-        //private readonly IDbConnection db;
-        //public CompanyRepositoryDapperSP(IConfiguration configuration)
-        //{
-        //    this.db = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
-        //}
         public async Task<Company?> Get(int? id)
         {
             return await
@@ -24,9 +17,7 @@ namespace Dapper_Learn.Repositories
 
         public async Task<List<Company>> GetAll()
         {
-            var companies = await
-                db.QueryAsync<Company>
-                ("usp_GetAllCompanies", commandType: CommandType.StoredProcedure);
+            var companies = await db.QueryAsync<Company>("usp_GetAllCompanies", commandType: CommandType.StoredProcedure);
             return companies.ToList();
         }
 
