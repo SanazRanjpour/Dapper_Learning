@@ -12,7 +12,7 @@ builder.Services.AddDbContext<ApplicationDBContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-builder.Services.AddScoped<ICompanyRepository, CompanyRepositoryDapperSP>();
+builder.Services.AddScoped<ICompanyRepository, CompanyRepositoryDapperContrib>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepositoryDapper>();
 
 
