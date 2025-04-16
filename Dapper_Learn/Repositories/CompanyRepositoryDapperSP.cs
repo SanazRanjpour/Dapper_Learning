@@ -19,7 +19,8 @@ namespace Dapper_Learn.Repositories
         public async Task<Company?> Get(int? id)
         {
             return await
-                 db.QueryFirstOrDefaultAsync<Company>("usp_GetCompany", new { CompanyId = id }, commandType: CommandType.StoredProcedure);
+                 db.QueryFirstOrDefaultAsync<Company>
+                 ("usp_GetCompany", new { CompanyId = id }, commandType: CommandType.StoredProcedure);
         }
 
         public async Task<List<Company>> GetAll()

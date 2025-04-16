@@ -4,6 +4,7 @@ using Dapper.Contrib.Extensions;
 
 namespace Dapper_Learn.Models
 {
+    [Table("Companies")]
     public class Company
     {
         //NOTICE
@@ -16,6 +17,7 @@ namespace Dapper_Learn.Models
         public string State { get; set; }
         public string PostalCode { get; set; }
 
+        [Write(false)]
         public virtual ICollection<Employee>? Employees { get; set; }
     }
 }

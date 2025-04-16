@@ -4,6 +4,7 @@ using Dapper.Contrib.Extensions;
 
 namespace Dapper_Learn.Models
 {
+    [Table("Employees")]
     public class Employee
     {
         [Key]
