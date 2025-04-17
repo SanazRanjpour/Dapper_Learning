@@ -1,15 +1,18 @@
-using System.Diagnostics;
-using System.Linq.Expressions;
 using Dapper_Learn.Models;
 using Dapper_Learn.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace Dapper_Learn.Controllers
 {
     public class HomeController(ILogger<HomeController> _logger, IBonusRepository _bonusRepository) : Controller
     {
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string q)
         {
+            if(!string.IsNullOrEmpty(q))
+            {
+               return View(await _bonusRepository.Search(q));
+            }
             return View(await _bonusRepository.GetAllCompaniesWithEmployees());
         }
 
@@ -54,6 +57,13 @@ namespace Dapper_Learn.Controllers
 
             await _bonusRepository.AddRecordsToCompany(company);
 
+            return RedirectToAction("Index");
+        }
+
+
+        public async Task<IActionResult> RemoveRecords (int id)
+        {
+            await _bonusRepository.RemoveCompany(id);
             return RedirectToAction("Index");
         }
     }

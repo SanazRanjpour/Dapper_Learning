@@ -6,12 +6,19 @@
 <div >
     <a class="btn btn-success" asp-action="AddRecords">Add Test Records</a>
 </div>
-
+<div class="row">
+    <form  method="get" class="form-check-inline">
+        <div>
+            <input type="search" placeholder="Enter Name ..." name="q"/>
+            <input type="submit" name="name" value="Search" />
+        </div>       
+    </form>
+</div>
 @foreach (var company in Model)
 {
     <div class="row">
      
-        <h3>@company.Name</h3>
+        <h3>@company.Name  <a class="btn btn-danger" asp-action="RemoveRecords" asp-route-id="@company.CompanyId">Remove</a></h3>
         <hr />
         <table class="table">
             <thead>

@@ -8,5 +8,7 @@ namespace Dapper_Learn.Repositories
         Task<Company> GetCompanyWithEmployees(int id);
         Task<List<Company>> GetAllCompaniesWithEmployees();
         Task AddRecordsToCompany(Company company);
+        Task RemoveCompany(int companyId);
+        Task<List<Company>> Search(string param);
     }
 }

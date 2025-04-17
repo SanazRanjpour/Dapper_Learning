@@ -118,5 +118,23 @@ namespace Dapper_Learn.Repositories
 
             }
         }
+
+        public async Task RemoveCompany(int companyId)
+        {
+            var query = @"DELETE FROM Employees 
+                          WHERE CompanyId = @CompanyId
+                         
+                          DELETE FROM Companies WHERE CompanyId = @CompanyId";
+            await db.ExecuteAsync(query, new {@CompanyId = companyId});
+         
+        }
+
+        public async Task<List<Company>> Search(string param)
+        {
+            var query = @"SELECT * FROM Companies
+                          WHERE Name LIKE '%' + @param + '%'";
+
+          return  (await db.QueryAsync<Company>(query, new {param})).ToList();
+        }
     }
 }
