@@ -5,15 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Dapper_Learn.Controllers
 {
-    public class CompaniesController : Controller
+    public class CompaniesController(ICompanyRepository _companyRepository, IBonusRepository _bonusRepository) : Controller
     {
-        private readonly ICompanyRepository _companyRepository;
-
-        public CompaniesController(ICompanyRepository companyRepository)
-        {
-            _companyRepository = companyRepository;
-        }
-
+        
         // GET: Companies
         public async Task<IActionResult> Index()
         {
@@ -29,7 +23,7 @@ namespace Dapper_Learn.Controllers
                 return NotFound();
             }
 
-            var company = await _companyRepository.Get(id.Value);
+            var company = await _bonusRepository.GetCompanyWithEmployees(id.Value);
             if (company == null)
             {
                 return NotFound();

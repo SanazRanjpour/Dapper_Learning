@@ -74,7 +74,17 @@ namespace Dapper_Learn.Repositories
         {
             string query = "DELETE FROM Companies WHERE CompanyId = @CompanyId";
             await db.ExecuteAsync(query, new {CompanyId = id});
-           // or  await db.ExecuteAsync(query, new { id });
+
+            // or  await db.ExecuteAsync(query, new { id });
+          
+            // Or in this way:
+            // var param = new
+            //  {
+            //    CompanyId = id
+            //  }
+           //  string query = "DELETE FROM Companies WHERE CompanyId = @CompanyId";
+           //  await db.ExecuteAsync(query, param);
+
         }
     }
 }
