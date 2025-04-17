@@ -9,7 +9,7 @@ namespace Dapper_Learn.Repositories
     {
         private IDbConnection db = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
 
-      
+
         public async Task<List<Employee>> GetEmployeesWithCompany(int id)
         {
             var query = @"SELECT E.*, C.*
@@ -17,7 +17,7 @@ namespace Dapper_Learn.Repositories
                   INNER JOIN Companies AS C
                   ON E.CompanyId = C.CompanyId";
 
-            if(id != 0)
+            if (id != 0)
             {
                 query += " WHERE E.CompanyId = @Id";  // Before WHERE Must Be A Space
             }
@@ -27,7 +27,7 @@ namespace Dapper_Learn.Repositories
                 return e;
             }, new { id }, splitOn: "CompanyId");
             //return [.. employees]; 
-             return employees.ToList();
+            return employees.ToList();
         }
 
 
@@ -94,6 +94,29 @@ namespace Dapper_Learn.Repositories
             return company.Distinct().ToList();
         }
 
+        public async Task AddRecordsToCompany(Company company)
+        {
+            var query = @"INSERT INTO Companies
+                          (Name, Address, City, State, PostalCode)
+                          VALUES (@Name, @Address, @City, @State, @PostalCode);
+                          SELECT CAST (SCOPE_IDENTITY() AS INT);";
 
+            var id = await db.QueryFirstOrDefaultAsync<int>(query, company);
+            company.CompanyId = id;
+
+            foreach (var employee in company.Employees)
+            {
+
+                employee.CompanyId = company.CompanyId;
+
+                var queryEm = @"INSERT INTO Employees
+                                (Name, Email, Phone, Title, CompanyId)
+                                VALUES (@Name, @Email, @Phone, @Title, @CompanyId);
+                                SELECT CAST (SCOPE_IDENTITY() AS INT);";
+
+                await db.QueryFirstOrDefaultAsync<int>(queryEm, employee);
+
+            }
+        }
     }
 }
