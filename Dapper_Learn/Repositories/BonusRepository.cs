@@ -2,6 +2,7 @@
 using Dapper_Learn.Models;
 using Microsoft.Data.SqlClient;
 using System.Data;
+using System.Transactions;
 
 namespace Dapper_Learn.Repositories
 {
@@ -140,6 +141,46 @@ namespace Dapper_Learn.Repositories
             /// ******************* End Of Second Solution **********************
         }
 
+        public async Task AddTestRecordsToCompanyWithTransaction(Company company)
+        {
+            using (var trans = new TransactionScope())
+            {
+                try
+                {
+                    var query = @"INSERT INTO Companies
+                          (Name, Address, City, State, PostalCode)
+                          VALUES (@Name, @Address, @City, @State, @PostalCode);
+                          SELECT CAST (SCOPE_IDENTITY() AS INT);";
+
+                    var id = await db.QueryFirstOrDefaultAsync<int>(query, company);
+                    company.CompanyId = id;
+
+                    company.Employees.Select(e =>
+                    {
+                        e.CompanyId = id;
+                        return e;
+                    }).ToList();
+
+                    var queryEm = @"INSERT INTO Employees1
+                            (Name, Email, Phone, Title, CompanyId)
+                            VALUES (@Name, @Email, @Phone, @Title, @CompanyId);
+                            SELECT CAST (SCOPE_IDENTITY() AS INT);";
+
+                    await db.ExecuteAsync(queryEm, company.Employees);
+
+                    trans.Complete();
+
+                    /// If try is not completed and the 'transaction.Completed' doesn't meet,
+                    /// the RollBack is done and none of the insertions are done.
+                   
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+        }
+
         public async Task RemoveCompany(int companyId)
         {
             var query = @"DELETE FROM Employees 
@@ -157,5 +198,7 @@ namespace Dapper_Learn.Repositories
 
             return (await db.QueryAsync<Company>(query, new { param })).ToList();
         }
+
+       
     }
 }

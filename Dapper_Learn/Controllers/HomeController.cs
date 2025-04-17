@@ -55,7 +55,8 @@ namespace Dapper_Learn.Controllers
                 Title = "Test Title 2"
             });
 
-            await _bonusRepository.AddRecordsToCompany(company);
+            //await _bonusRepository.AddRecordsToCompany(company);
+            await _bonusRepository.AddTestRecordsToCompanyWithTransaction(company);
 
             return RedirectToAction("Index");
         }
