@@ -104,19 +104,40 @@ namespace Dapper_Learn.Repositories
             var id = await db.QueryFirstOrDefaultAsync<int>(query, company);
             company.CompanyId = id;
 
-            foreach (var employee in company.Employees)
+            /// ***************** First Solution ****************
+
+            //foreach (var employee in company.Employees)
+            //{
+
+            //    employee.CompanyId = company.CompanyId;
+
+            //    var queryEm = @"INSERT INTO Employees
+            //                    (Name, Email, Phone, Title, CompanyId)
+            //                    VALUES (@Name, @Email, @Phone, @Title, @CompanyId);
+            //                    SELECT CAST (SCOPE_IDENTITY() AS INT);";
+
+            //    await db.QueryFirstOrDefaultAsync<int>(queryEm, employee);
+
+            //}
+
+            /// ***************** End Of First Solution ******************
+
+            /// ******************* Second Solution **********************
+
+            company.Employees.Select(e =>
             {
+                e.CompanyId = id;
+                return e;
+            }).ToList();
 
-                employee.CompanyId = company.CompanyId;
+            var queryEm = @"INSERT INTO Employees
+                            (Name, Email, Phone, Title, CompanyId)
+                            VALUES (@Name, @Email, @Phone, @Title, @CompanyId);
+                            SELECT CAST (SCOPE_IDENTITY() AS INT);";
 
-                var queryEm = @"INSERT INTO Employees
-                                (Name, Email, Phone, Title, CompanyId)
-                                VALUES (@Name, @Email, @Phone, @Title, @CompanyId);
-                                SELECT CAST (SCOPE_IDENTITY() AS INT);";
+            await db.ExecuteAsync(queryEm, company.Employees);
 
-                await db.QueryFirstOrDefaultAsync<int>(queryEm, employee);
-
-            }
+            /// ******************* End Of Second Solution **********************
         }
 
         public async Task RemoveCompany(int companyId)
@@ -125,8 +146,8 @@ namespace Dapper_Learn.Repositories
                           WHERE CompanyId = @CompanyId
                          
                           DELETE FROM Companies WHERE CompanyId = @CompanyId";
-            await db.ExecuteAsync(query, new {@CompanyId = companyId});
-         
+            await db.ExecuteAsync(query, new { @CompanyId = companyId });
+
         }
 
         public async Task<List<Company>> Search(string param)
@@ -134,7 +155,7 @@ namespace Dapper_Learn.Repositories
             var query = @"SELECT * FROM Companies
                           WHERE Name LIKE '%' + @param + '%'";
 
-          return  (await db.QueryAsync<Company>(query, new {param})).ToList();
+            return (await db.QueryAsync<Company>(query, new { param })).ToList();
         }
     }
 }
