@@ -7,6 +7,11 @@ namespace Dapper_Learn.Models
     [Table("Companies")]
     public class Company
     {
+        //public Company()
+        //{
+        //    Employees = new List<Employee>();
+        //}
+
         //NOTICE
         // Key Should be Of Dapper.Contrib.Extensions Name Space Not System.ComponentModel.DataAnnotations
         [Key]
@@ -18,6 +23,6 @@ namespace Dapper_Learn.Models
         public string PostalCode { get; set; }
 
         [Write(false)]
-        public virtual ICollection<Employee>? Employees { get; set; }
+        public virtual ICollection<Employee>? Employees { get; set; } = [];
     }
 }

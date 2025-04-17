@@ -1,21 +1,15 @@
 using System.Diagnostics;
 using Dapper_Learn.Models;
+using Dapper_Learn.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dapper_Learn.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController(ILogger<HomeController> _logger, IBonusRepository _bonusRepository) : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        public async Task<IActionResult> Index()
         {
-            _logger = logger;
-        }
-
-        public IActionResult Index()
-        {
-            return View();
+            return View(await _bonusRepository.GetAllCompaniesWithEmployees());
         }
 
         public IActionResult Privacy()
