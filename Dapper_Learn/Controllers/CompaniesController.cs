@@ -1,18 +1,26 @@
-﻿using Dapper_Learn.Models;
+﻿using Dapper;
+using Dapper_Learn.Models;
 using Dapper_Learn.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Dapper_Learn.Controllers
 {
-    public class CompaniesController(ICompanyRepository _companyRepository, IBonusRepository _bonusRepository) : Controller
+    public class CompaniesController(ICompanyRepository _companyRepository,
+                                     IBonusRepository _bonusRepository,
+                                     IDapperGenericRepository _dapperGenericRepository) : Controller
     {
         
         // GET: Companies
         public async Task<IActionResult> Index()
         {
-            var companies = await _companyRepository.GetAll();
-            return View(companies);
+            //var companies = await _companyRepository.GetAll();
+            //return View(companies);
+
+            return View(await _dapperGenericRepository
+                             .ListAsync<Company>
+                             ("usp_GetAllCompanies"));
         }
 
         // GET: Companies/Details/5
@@ -23,7 +31,10 @@ namespace Dapper_Learn.Controllers
                 return NotFound();
             }
 
-            var company = await _bonusRepository.GetCompanyWithEmployees(id.Value);
+            //var company = await _bonusRepository.GetCompanyWithEmployees(id.Value);
+            var company = await _dapperGenericRepository
+                         .SingleAsync<Company>
+                         ("usp_GetCompany", new { CompanyId = id.GetValueOrDefault() });
             if (company == null)
             {
                 return NotFound();
@@ -47,8 +58,17 @@ namespace Dapper_Learn.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _companyRepository.Add(company);
+                //await _companyRepository.Add(company);
                 //await _context.SaveChangesAsync();
+                var parameters = new DynamicParameters();
+                parameters.Add("@CompanyId", 0, DbType.Int32, ParameterDirection.Output);
+                parameters.Add("@Name", company.Name);
+                parameters.Add("@Address", company.Address);
+                parameters.Add("@City", company.City);
+                parameters.Add("@State", company.State);
+                parameters.Add("@PostalCode", company.PostalCode);
+                await _dapperGenericRepository
+                     .ExecuteAsync("usp_AddCompany", parameters);
                 return RedirectToAction(nameof(Index));
             }
             return View(company);
@@ -62,7 +82,10 @@ namespace Dapper_Learn.Controllers
                 return NotFound();
             }
 
-            var company = await _companyRepository.Get(id.Value);
+            //var company = await _companyRepository.Get(id.Value);
+            var company = await _dapperGenericRepository
+                         .SingleAsync<Company>
+                         ("usp_GetCompany", new { CompanyId = id.GetValueOrDefault() });
             if (company == null)
             {
                 return NotFound();
@@ -86,8 +109,17 @@ namespace Dapper_Learn.Controllers
             {
                 try
                 {
-                    await _companyRepository.Update(company);
+                    //await _companyRepository.Update(company);
                     //await _context.SaveChangesAsync();
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@CompanyId", company.CompanyId, DbType.Int32);
+                    parameters.Add("@Name", company.Name);
+                    parameters.Add("@Address", company.Address);
+                    parameters.Add("@City", company.City);
+                    parameters.Add("@State", company.State);
+                    parameters.Add("@PostalCode", company.PostalCode);
+                    await _dapperGenericRepository
+                          .ExecuteAsync("usp_UpdateCompany", parameters);
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
@@ -116,7 +148,10 @@ namespace Dapper_Learn.Controllers
                 return NotFound();
             }
 
-            var company = await _companyRepository.Get(id.Value);
+            //var company = await _companyRepository.Get(id.Value);
+            var company = await _dapperGenericRepository
+                         .SingleAsync<Company>
+                         ("usp_GetCompany", new { CompanyId = id.GetValueOrDefault() });
             if (company == null)
             {
                 return NotFound();
@@ -128,12 +163,17 @@ namespace Dapper_Learn.Controllers
         // POST: Companies/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int? id)
         {
-            var company = await _companyRepository.Get(id);
+            //var company = await _companyRepository.Get(id);
+            var company = await _dapperGenericRepository
+                         .SingleAsync<Company>
+                         ("usp_GetCompany", new { CompanyId = id.GetValueOrDefault() });
             if (company != null)
             {
-                await _companyRepository.Delete(id);
+                //await _companyRepository.Delete(id);
+                await _dapperGenericRepository
+                      .ExecuteAsync("usp_DeleteCompany", new { CompanyId = id });
             }
 
             //await _context.SaveChangesAsync();

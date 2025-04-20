@@ -16,10 +16,15 @@ namespace Dapper_Learn.Repositories
             ConnectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        private IDbConnection CreateConnection()
-        {
-            return new SqlConnection(ConnectionString);
-        }
+        private IDbConnection CreateConnection() => new SqlConnection(ConnectionString);
+
+        /// Or as this:
+        /// private IDbConnection CreateConnection()
+       ///  {
+       ///    return new SqlConnection(ConnectionString);
+      ///   }
+      
+      
         public async Task ExecuteAsync(string name)
         {
            await ExecuteAsync(name, null);
